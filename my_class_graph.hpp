@@ -28,7 +28,11 @@ class myGraph
         Node() = default;
     };
 
+    std::map<std::string, Node*> vertexes;
+
+public:
     myGraph() = default;
+    ~myGraph() = default;
     myGraph(std::string file_name);
 };
 
@@ -40,10 +44,6 @@ myGraph::myGraph(std::string file_name)
     {
         throw InvalidFileName();
     }
-
-//    std::vector<std::string> vertexes;
-//    std::vector<char> adjacents;
-//    std::vector<int> distances;
 
     std::string str_vertex;
     std::string str_adjacent;
@@ -79,6 +79,8 @@ myGraph::myGraph(std::string file_name)
 
         ss.clear();
         ss2.clear();
+
+        vertexes[p->value] = p;
     }
 }
 

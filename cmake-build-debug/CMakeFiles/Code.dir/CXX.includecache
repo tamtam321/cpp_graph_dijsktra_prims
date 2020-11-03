@@ -7,6 +7,8 @@
 #IncludeRegexTransform: 
 
 /home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/main.cpp
+my_class_graph.hpp
+/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/my_class_graph.hpp
 iostream
 -
 fstream
@@ -14,6 +16,26 @@ fstream
 vector
 -
 sstream
+-
+exception
+-
+
+/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/my_class_graph.hpp
+iostream
+-
+map
+-
+unordered_map
+-
+fstream
+-
+sstream
+-
+utility
+-
+tuple
+-
+vector
 -
 exception
 -
