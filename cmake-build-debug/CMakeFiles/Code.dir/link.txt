@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -Wextra -pedantic -Werror -g   CMakeFiles/Code.dir/main.cpp.o  -o Code 

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/main.cpp
+iostream
+-
+fstream
+-
+vector
+-
+sstream
+-
+exception
+-
+
