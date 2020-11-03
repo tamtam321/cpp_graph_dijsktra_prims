@@ -22,19 +22,36 @@ class myGraph
 {
     struct Node
     {
-        std::string value;
+        char value;
         std::map<char, int> adj;
 
         Node() = default;
+        Node(char vrtx);
+        Node(char vrtx, std::map<char, int> adjacency);
     };
 
-    std::map<std::string, Node*> vertexes;
+    std::map<char, Node*> vertexes;
 
 public:
     myGraph() = default;
     ~myGraph() = default;
     myGraph(std::string file_name);
+
+    void updateAdjacency(Node *p);
+    bool isEmpty();
+    void addVertex(char vrtx, std::map<char, int> adjacency);
 };
+
+myGraph::Node::Node(char vrtx)
+{
+    this->value = vrtx;
+}
+
+myGraph::Node::Node(char vrtx, std::map<char, int> adjacency)
+{
+    this->value = vrtx;
+    this->adj = adjacency;
+}
 
 myGraph::myGraph(std::string file_name)
 {
@@ -59,7 +76,7 @@ myGraph::myGraph(std::string file_name)
         std::getline(f_in, str_adjacent);
         std::getline(f_in, str_distance);
 
-        p->value = str_vertex;
+        p->value = str_vertex[0];
 
         ss << str_adjacent;
         ss2 << str_distance;
@@ -80,6 +97,35 @@ myGraph::myGraph(std::string file_name)
         ss.clear();
         ss2.clear();
 
+        vertexes[p->value] = p;
+    }
+}
+
+void myGraph::updateAdjacency(Node *p)
+{
+    for (auto [v_key, v_val] : p->adj)
+    {
+        vertexes[v_key]->adj.insert(std::pair<char, int>(p->value, v_val));
+    }
+}
+
+bool myGraph::isEmpty()
+{
+    return vertexes.empty();
+}
+
+void myGraph::addVertex(char vrtx, std::map<char, int> adjacency)
+{
+    if (isEmpty())
+    {
+        Node *p = new Node(vrtx);
+        vertexes[p->value] = p;
+        return;
+    }
+    else
+    {
+        Node *p = new Node(vrtx, adjacency);
+        updateAdjacency(p);
         vertexes[p->value] = p;
     }
 }
