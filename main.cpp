@@ -5,16 +5,38 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <utility>
 
 #include <exception>
 
 int main()
 {
-    myGraph mg1("graph_01.txt");
-    myGraph mg2;
+    myGraph mg1("graph_02.txt");
+    mg1.addVertex('w', {{'h', 1}, {'c', 2}, {'d', 3}});
 
-//    std::map<char, int> map1;
-//    map1 = {{'a', 1},{'b', 2},{'c', 3}};
+//    std::map<char, std::vector<int>> map1;
+//    map1 = {{'a', {1}},{'b', {2}},{'c', {3}}};
+//    map1['d'] = {4};
+//    map1['a'].push_back(5);
+//    map1['e'].push_back(6);
+//    map1.insert(std::pair<char, std::vector<int>>('w', {9}));
+
+//    myGraph mg3;
+//    mg3.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
+//    mg3.addVertex('b', {{'a', 3}});
+//    mg3.addVertex('d', {{'a', 6}});
+//    mg3.addVertex('j', {{'a', 9}});
+
+//    mg3.addVertex('b', {{}});
+//    mg3.addVertex('d', {{'b', 4}});
+//    mg3.addVertex('j', {{'d', 5}, {'b', 12}});
+//    mg3.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
+
+/// FAIL
+//    mg3.addVertex('b', {{'d', 4}});
+//    mg3.addVertex('d', {{'j', 4}});
+//    mg3.addVertex('j', {{'b', 5}});
+//    mg3.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
 
     return 0;
 }
