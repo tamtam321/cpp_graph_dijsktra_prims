@@ -13,6 +13,9 @@ int main()
 {
     myGraph mg1("graph_02.txt");
     mg1.addVertex('w', {{'h', 1}, {'c', 2}, {'d', 3}});
+    mg1.removeVertex('w');
+    mg1.removeVertex('f');
+    mg1.addVertex('f', {{'c', 4}, {'d', 14}, {'e', 10}, {'g', 2}});
 
 //    std::map<char, std::vector<int>> map1;
 //    map1 = {{'a', {1}},{'b', {2}},{'c', {3}}};

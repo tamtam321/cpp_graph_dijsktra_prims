@@ -32,14 +32,22 @@ class myGraph
 
     std::map<char, Node*> vertexes;
 
+    bool isEmpty();
+    void update_adjacency_after_insert(Node *p);
+    void update_adjacency_after_remove(Node *p);
+
 public:
     myGraph() = default;
     ~myGraph() = default;
     myGraph(std::string file_name);
 
-    void updateAdjacency(Node *p);
-    bool isEmpty();
+    myGraph(const myGraph &mg) = delete;
+    myGraph &operator=(const myGraph &mg) = delete;
+    myGraph &operator=(myGraph &&mg) = delete;
+    myGraph(myGraph &&mg) = delete;
+
     void addVertex(char vrtx, std::map<char, int> adjacency);
+    void removeVertex(char vrtx);
 };
 
 myGraph::Node::Node(char vrtx)
@@ -101,7 +109,7 @@ myGraph::myGraph(std::string file_name)
     }
 }
 
-void myGraph::updateAdjacency(Node *p)
+void myGraph::update_adjacency_after_insert(Node *p)
 {
     for (auto [v_key, v_val] : p->adj)
     {
@@ -125,9 +133,26 @@ void myGraph::addVertex(char vrtx, std::map<char, int> adjacency)
     else
     {
         Node *p = new Node(vrtx, adjacency);
-        updateAdjacency(p);
+        update_adjacency_after_insert(p);
         vertexes[p->value] = p;
     }
+}
+
+void myGraph::update_adjacency_after_remove(Node *p)
+{
+    for (auto [v_key, v_val] : p->adj)
+    {
+        vertexes[v_key]->adj.erase(p->value);
+    }
+}
+
+void myGraph::removeVertex(char vrtx)
+{
+    Node *p = vertexes[vrtx];
+
+    update_adjacency_after_remove(p);
+    vertexes.erase(p->value);
+    delete p;
 }
 
 #endif //CODE_MY_CLASS_GRAPH_HPP
