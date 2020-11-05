@@ -9,13 +9,14 @@
 #include <utility>
 #include <tuple>
 #include <vector>
+#include <set>
 
 #include <exception>
 
 class InvalidFileName : public std::exception
 {
 public:
-    const char *what() const noexcept { return "Invalid filename !"; }
+    const char *what() const noexcept { return "Invalid filename!"; }
 };
 
 class myGraph
@@ -35,10 +36,14 @@ class myGraph
     bool isEmpty();
     void update_adjacency_after_insert(Node *p);
     void update_adjacency_after_remove(Node *p);
+    void DFS(std::set<char> visited, std::set<char> &articulationPoints, Node *vertex,
+             std::map<char, int> visitedTime, std::map<char, int> lowTime,
+             std::map<char, char> parent, int &time);
+    bool is_articulation_point(Node *p);
 
 public:
     myGraph() = default;
-    ~myGraph() = default;
+    ~myGraph();
     myGraph(std::string file_name);
 
     myGraph(const myGraph &mg) = delete;
@@ -59,6 +64,18 @@ myGraph::Node::Node(char vrtx, std::map<char, int> adjacency)
 {
     this->value = vrtx;
     this->adj = adjacency;
+}
+
+myGraph::~myGraph()
+{
+    std::map<char, Node*>::iterator it;
+    Node *tmp;
+
+    for (it = vertexes.begin(); it != vertexes.end(); it++)
+    {
+        tmp = it->second;
+        delete tmp;
+    }
 }
 
 myGraph::myGraph(std::string file_name)
@@ -150,9 +167,93 @@ void myGraph::removeVertex(char vrtx)
 {
     Node *p = vertexes[vrtx];
 
-    update_adjacency_after_remove(p);
-    vertexes.erase(p->value);
-    delete p;
+    if (is_articulation_point(p))
+    {
+        try
+        {
+            throw vrtx;
+        }
+        catch (char ex)
+        {
+            std::string s(1, ex);
+            std::cout << "Can't remove \"" + s + "\" node, because\n"
+                         "this is an articulation point!\n"
+                         "Deletion is allowed, if no other node or subtree is isolated after remove." << std::endl;
+        }
+    }
+    else
+    {
+        update_adjacency_after_remove(p);
+        vertexes.erase(p->value);
+        delete p;
+    }
+}
+
+void myGraph::DFS(std::set<char> visited, std::set<char> &articulationPoints,
+                  Node *vertex, std::map<char, int> visitedTime,
+                  std::map<char, int> lowTime, std::map<char, char> parent, int &time)
+{
+    visited.insert(vertex->value);
+    visitedTime.insert({vertex->value, time});
+    lowTime.insert({vertex->value, time});
+    time++;
+    int childCount = 0;
+    bool isArticulationPoint = false;
+
+    for (auto [_adj, distance] : vertex->adj)
+    {
+        if (_adj == parent[vertex->value])
+        {
+            continue;
+        }
+
+        if (!visited.contains(_adj))
+        {
+            parent.insert({_adj, vertex->value});
+            childCount++;
+            DFS(visited, articulationPoints, vertexes[_adj], visitedTime, lowTime, parent, time);
+
+            if (visitedTime[vertex->value] <= lowTime[_adj])
+            {
+                isArticulationPoint = true;
+            }
+            else
+            {
+                lowTime[vertex->value] = std::min(lowTime[vertex->value], lowTime[_adj]);
+            }
+        }
+        else
+        {
+            lowTime[vertex->value] = std::min(lowTime[vertex->value], lowTime[_adj]);
+        }
+    }
+
+    if ((parent.find(vertex->value) == parent.end() && childCount >= 2) ||
+    (parent.find(vertex->value) != parent.end() && isArticulationPoint))
+    {
+        articulationPoints.insert(vertex->value);
+    }
+}
+
+bool myGraph::is_articulation_point(Node *p)
+{
+    bool sol = false;
+    int time = 0;
+    std::set<char> visited;
+    std::set<char> articulationPoints;
+    std::map<char, int> visitedTime;
+    std::map<char, int> lowTime;
+    std::map<char, char> parent;
+    Node *startVertex = p;
+
+    DFS(visited, articulationPoints, startVertex, visitedTime, lowTime, parent, time);
+
+    if (articulationPoints.contains(p->value))
+    {
+        sol = true;
+    }
+
+    return sol;
 }
 
 #endif //CODE_MY_CLASS_GRAPH_HPP
