@@ -19,6 +19,11 @@ public:
     const char *what() const noexcept { return "Invalid filename!"; }
 };
 
+class UnderFlowException : public std::exception {
+public:
+    const char *what() const noexcept { return "Graph is empty, you can't remove any node!"; }
+};
+
 class myGraph
 {
     struct Node
@@ -36,9 +41,9 @@ class myGraph
     bool isEmpty();
     void update_adjacency_after_insert(Node *p);
     void update_adjacency_after_remove(Node *p);
-    void DFS(std::set<char> visited, std::set<char> &articulationPoints, Node *vertex,
-             std::map<char, int> visitedTime, std::map<char, int> lowTime,
-             std::map<char, char> parent, int &time);
+    void DFS(std::set<char> &visited, std::set<char> &articulationPoints, Node *vertex,
+             std::map<char, int> &visitedTime, std::map<char, int> &lowTime,
+             std::map<char, char> &parent, int &time);
     bool is_articulation_point(Node *p);
 
 public:
@@ -165,6 +170,11 @@ void myGraph::update_adjacency_after_remove(Node *p)
 
 void myGraph::removeVertex(char vrtx)
 {
+    if (vertexes.empty())
+    {
+        throw UnderFlowException();
+    }
+
     Node *p = vertexes[vrtx];
 
     if (is_articulation_point(p))
@@ -178,7 +188,7 @@ void myGraph::removeVertex(char vrtx)
             std::string s(1, ex);
             std::cout << "Can't remove \"" + s + "\" node, because\n"
                          "this is an articulation point!\n"
-                         "Deletion is allowed, if no other node or subtree is isolated after remove." << std::endl;
+                         "Deletion is allowed, if no other nodes or subtrees are isolated after remove." << std::endl;
         }
     }
     else
@@ -189,9 +199,9 @@ void myGraph::removeVertex(char vrtx)
     }
 }
 
-void myGraph::DFS(std::set<char> visited, std::set<char> &articulationPoints,
-                  Node *vertex, std::map<char, int> visitedTime,
-                  std::map<char, int> lowTime, std::map<char, char> parent, int &time)
+void myGraph::DFS(std::set<char> &visited, std::set<char> &articulationPoints,
+                  Node *vertex, std::map<char, int> &visitedTime,
+                  std::map<char, int> &lowTime, std::map<char, char> &parent, int &time)
 {
     visited.insert(vertex->value);
     visitedTime.insert({vertex->value, time});
@@ -202,7 +212,7 @@ void myGraph::DFS(std::set<char> visited, std::set<char> &articulationPoints,
 
     for (auto [_adj, distance] : vertex->adj)
     {
-        if (_adj == parent[vertex->value])
+        if (parent.find(vertex->value) != parent.end() && _adj == parent[vertex->value])
         {
             continue;
         }
@@ -252,6 +262,11 @@ bool myGraph::is_articulation_point(Node *p)
     {
         sol = true;
     }
+
+//    for (char ch : articulationPoints)
+//    {
+//        std::cout << ch << std::endl;
+//    }
 
     return sol;
 }
