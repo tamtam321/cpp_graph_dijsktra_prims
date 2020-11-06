@@ -11,6 +11,8 @@
 #include <vector>
 #include <set>
 
+# define INF 0x3f3f3f3f
+
 #include <exception>
 
 class InvalidFileName : public std::exception
@@ -23,6 +25,12 @@ class UnderFlowException : public std::exception
 {
 public:
     const char *what() const noexcept { return "Graph is empty, you can't remove any node!"; }
+};
+
+class EmptyGraphNoDijkstra : public std::exception
+{
+public:
+    const char *what() const noexcept { return "Graph is empty, can't do Dijkstra!"; }
 };
 
 class myGraph
@@ -42,10 +50,13 @@ class myGraph
     bool isEmpty();
     void update_adjacency_after_insert(Node *p);
     void update_adjacency_after_remove(Node *p);
+
     void DFS(std::set<char> &visited, std::set<char> &articulationPoints, Node *vertex,
              std::map<char, int> &visitedTime, std::map<char, int> &lowTime,
              std::map<char, char> &parent, int &time);
     bool is_articulation_point(Node *p);
+
+    std::string dijkstra_path(std::map<char, char> parent, char from, char to);
 
 public:
     myGraph() = default;
@@ -59,6 +70,7 @@ public:
 
     void addVertex(char vrtx, std::map<char, int> adjacency);
     void removeVertex(char vrtx);
+    void dijkstra(char src);
 };
 
 myGraph::Node::Node(char vrtx)
@@ -281,6 +293,104 @@ bool myGraph::is_articulation_point(Node *p)
     }
 
     return sol;
+}
+
+std::string myGraph::dijkstra_path(std::map<char, char> parent, char from, char to)
+{
+    std::string path = "";
+
+    path += to;
+    std::string arrow = "--->";
+
+    while (from != to)
+    {
+        path = parent[to] + arrow + path;
+        to = parent[to];
+    }
+
+    return path;
+}
+
+void myGraph::dijkstra(char src)
+{
+    if (vertexes.empty())
+    {
+        throw EmptyGraphNoDijkstra();
+    }
+    else if (vertexes.find(src) == vertexes.end())
+    {
+        std::string s(1, src);
+        std::cout << "The \"" + s + "\" node is not exist, so it could not be the source of the Dijkstra's algorithm.\n";
+        return;
+    }
+
+    std::map<char, bool> visited;
+    std::map<char, char> parent;
+    std::map<char, int> d;
+    std::set<char> unvisited;
+    int curr_min = INF;
+    std::pair<char, int> curr_process_vertex = std::make_pair('!', INF);
+    std::map<char, Node*> vertexes_copy = vertexes;
+
+    for (auto [vertex, distance] : vertexes_copy)
+    {
+        d.insert(std::make_pair(vertex, INF));
+        visited.insert(std::make_pair(vertex, false));
+        unvisited.insert(vertex);
+    }
+
+    d[src] = 0;
+    Node *curr_vertex = vertexes_copy[src];
+
+    while (!unvisited.empty())
+    {
+        for (auto [adjacent, adj_distance] : curr_vertex->adj)
+        {
+            curr_min = std::min(d[curr_vertex->value] + adj_distance, d[adjacent]);
+
+            if (curr_min < d[adjacent])
+            {
+                if (parent.find(adjacent) == parent.end())
+                {
+                    parent.insert(std::make_pair(adjacent, curr_vertex->value));
+                    d[adjacent] = curr_min;
+                }
+                else
+                {
+                    parent[adjacent] = curr_vertex->value;
+                    d[adjacent] = curr_min;
+                }
+            }
+        }
+
+        unvisited.erase(curr_vertex->value);
+        visited[curr_vertex->value] = true;
+        curr_process_vertex = std::make_pair('!', INF);
+
+        for (auto [vertex, distance] : d)
+        {
+            if (visited[vertex] == false)
+            {
+                if (curr_process_vertex.second >= distance)
+                {
+                    curr_process_vertex = std::make_pair(vertex, distance);
+                }
+            }
+        }
+
+        curr_vertex = vertexes_copy[curr_process_vertex.first];
+    }
+
+    std::cout << "Dijkstra's Shortest Path:" << std::endl;
+    std::cout << "Direction     Distance       Path" << std::endl;
+
+    for (auto [vertex, distance] : d)
+    {
+        std::string path = dijkstra_path(parent, src, vertex);
+        std::cout << src << "->" << vertex << "          " << distance << "              " << path << std::endl;
+    }
+
+    std::cout << std::endl;
 }
 
 #endif //CODE_MY_CLASS_GRAPH_HPP

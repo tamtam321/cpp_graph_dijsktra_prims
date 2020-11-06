@@ -95,7 +95,36 @@ int main()
 //    // Itt már üres a gráf és jelezni-e kéne felénk.
 //    mg1.removeVertex('f');
 
+/// Test 7: Dijkstra Shortest Path part 1
+//    myGraph mg1("graph_02.txt");
+//    mg1.dijkstra('a');
 
+/// Test 8: Dijkstra Shortest Path part 2
+//    myGraph mg1("graph_01.txt");
+//    mg1.print_dijkstras_shortest_path_of('a');
+//    mg1.dijkstra('h');
+
+/// Test 9: Dijkstra Shortest Path After Remove part 1
+//    myGraph mg1("graph_02.txt");
+//    mg1.dijkstra('a');
+//    mg1.removeVertex('c');
+//    mg1.dijkstra('w');
+
+/// Test 10: Dijkstra Shortest Path After Remove part 2
+//    myGraph mg1("graph_02.txt");
+//    mg1.dijkstra('a');
+//    mg1.removeVertex('c');
+//    mg1.removeVertex('d');
+//    mg1.removeVertex('i');
+//    mg1.removeVertex('e');
+//    mg1.removeVertex('f');
+//    mg1.removeVertex('g');
+//    mg1.removeVertex('b');
+//    mg1.removeVertex('h');
+//    mg1.removeVertex('a');
+//    mg1.dijkstra('h');
+
+/// Test 11:
 
     return 0;
 }
