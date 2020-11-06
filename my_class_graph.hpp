@@ -19,7 +19,8 @@ public:
     const char *what() const noexcept { return "Invalid filename!"; }
 };
 
-class UnderFlowException : public std::exception {
+class UnderFlowException : public std::exception
+{
 public:
     const char *what() const noexcept { return "Graph is empty, you can't remove any node!"; }
 };
@@ -174,6 +175,20 @@ void myGraph::removeVertex(char vrtx)
     {
         throw UnderFlowException();
     }
+    else if(vertexes.find(vrtx) == vertexes.end())
+    {
+        try
+        {
+            throw vrtx;
+        }
+        catch (char ex)
+        {
+            std::string s(1, ex);
+            std::cout << "The \"" + s + "\" node is not exist, you can't remove it!";
+        }
+
+        return;
+    }
 
     Node *p = vertexes[vrtx];
 
@@ -188,8 +203,10 @@ void myGraph::removeVertex(char vrtx)
             std::string s(1, ex);
             std::cout << "Can't remove \"" + s + "\" node, because\n"
                          "this is an articulation point!\n"
-                         "Deletion is allowed, if no other nodes or subtrees are isolated after remove." << std::endl;
+                         "Deletion is allowed, if no other nodes or subtrees are isolated after remove.\n" << std::endl;
         }
+
+        return;
     }
     else
     {
@@ -262,11 +279,6 @@ bool myGraph::is_articulation_point(Node *p)
     {
         sol = true;
     }
-
-//    for (char ch : articulationPoints)
-//    {
-//        std::cout << ch << std::endl;
-//    }
 
     return sol;
 }

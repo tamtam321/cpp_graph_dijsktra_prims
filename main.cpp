@@ -75,6 +75,26 @@ int main()
 //    mg3.removeVertex('i');
 //    mg3.removeVertex('i');
 
+/// Test 6: Remove vertex & consider articulation points part 3
+//    myGraph mg1("graph_02.txt");
+//    mg1.addVertex('w', {{'h', 1}, {'c', 2}, {'d', 3}});
+//    mg1.removeVertex('w');
+//    mg1.removeVertex('f');
+//    mg1.addVertex('f', {{'c', 4}, {'d', 14}, {'e', 10}, {'g', 2}});
+//
+//    mg1.removeVertex('c');
+//    mg1.removeVertex('a');
+//    mg1.removeVertex('b');
+//    mg1.removeVertex('h');
+//    mg1.removeVertex('i');
+//    mg1.removeVertex('g');
+//    mg1.removeVertex('f');
+//    mg1.removeVertex('d');
+//    mg1.removeVertex('e');
+//
+//    // Itt már üres a gráf és jelezni-e kéne felénk.
+//    mg1.removeVertex('f');
+
 
 
     return 0;
