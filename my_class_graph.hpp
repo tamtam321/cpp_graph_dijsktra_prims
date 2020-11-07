@@ -27,10 +27,10 @@ public:
     const char *what() const noexcept { return "Graph is empty, you can't remove any node!"; }
 };
 
-class EmptyGraphNoDijkstra : public std::exception
+class EmptyGraph : public std::exception
 {
 public:
-    const char *what() const noexcept { return "Graph is empty, can't do Dijkstra!"; }
+    const char *what() const noexcept { return "Graph is empty, can't do Dijkstra or Prim!"; }
 };
 
 class myGraph
@@ -71,6 +71,7 @@ public:
     void addVertex(char vrtx, std::map<char, int> adjacency);
     void removeVertex(char vrtx);
     void dijkstra(char src);
+    void prim(char src);
 };
 
 myGraph::Node::Node(char vrtx)
@@ -315,7 +316,7 @@ void myGraph::dijkstra(char src)
 {
     if (vertexes.empty())
     {
-        throw EmptyGraphNoDijkstra();
+        throw EmptyGraph();
     }
     else if (vertexes.find(src) == vertexes.end())
     {
@@ -388,6 +389,83 @@ void myGraph::dijkstra(char src)
     {
         std::string path = dijkstra_path(parent, src, vertex);
         std::cout << src << "->" << vertex << "          " << distance << "              " << path << std::endl;
+    }
+
+    std::cout << std::endl;
+}
+
+void myGraph::prim(char src)
+{
+    if (vertexes.empty())
+    {
+        throw EmptyGraph();
+    }
+    else if (vertexes.find(src) == vertexes.end())
+    {
+        std::string s(1, src);
+        std::cout << "The \"" + s + "\" node is not exist, so it could not be the source of the Dijkstra's algorithm.\n";
+        return;
+    }
+
+    std::map<char, Node*> vertexes_copy = vertexes;
+    std::map<char, char> parent;
+    std::map<char, bool> visited;
+    std::map<char, int> mst;
+    std::set<char> unvisited;
+
+    for (auto [vertex, distance] : vertexes_copy)
+    {
+        mst.insert(std::make_pair(vertex, INF));
+        visited.insert(std::make_pair(vertex, false));
+        parent.insert(std::make_pair(vertex, '!'));
+        unvisited.insert(vertex);
+    }
+
+    mst[src] = 0;
+    Node *curr_vertex = vertexes_copy[src];
+    std::pair<char, int> curr_min_vertex = std::make_pair('!', INF);
+    unvisited.erase(src);
+    visited[curr_vertex->value] = true;
+    parent[src] = src;
+
+    while (!unvisited.empty())
+    {
+        for (auto [adjacent, adj_distance] : curr_vertex->adj)
+        {
+            if (visited[adjacent] == false)
+            {
+                if (adj_distance < mst[adjacent])
+                {
+                    mst[adjacent] = adj_distance;
+                    parent[adjacent] = curr_vertex->value;
+                }
+            }
+        }
+
+        for (auto [vertex, distance] : mst)
+        {
+            if (curr_min_vertex.second > distance)
+            {
+                if (visited[vertex] == false)
+                {
+                    curr_min_vertex = std::make_pair(vertex, distance);
+                }
+            }
+        }
+
+        unvisited.erase(curr_min_vertex.first);
+        visited[curr_min_vertex.first] = true;
+
+        curr_vertex = vertexes_copy[curr_min_vertex.first];
+        curr_min_vertex = std::make_pair('!', INF);
+    }
+
+    std::cout << "Prim's Minimum Spanning Tree:" << std::endl;
+    std::cout << "Path" << "      " << "Weight" << std::endl;
+
+    for (auto [vertex, distance] : mst)
+    {
+        std::cout << parent[vertex] << "-->" << vertex << "      " << distance << std::endl;
     }
 
     std::cout << std::endl;
