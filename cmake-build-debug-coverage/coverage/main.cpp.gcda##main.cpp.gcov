@@ -1,0 +1,297 @@
+        -:    0:Source:/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/main.cpp
+        -:    0:Graph:/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/cmake-build-debug-coverage/CMakeFiles/Code.dir/main.cpp.gcno
+        -:    0:Data:/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/cmake-build-debug-coverage/CMakeFiles/Code.dir/main.cpp.gcda
+        -:    0:Runs:1
+        -:    1:#include "my_class_graph.hpp"
+        -:    2:
+        -:    3:#include <iostream>
+        -:    4:#include <fstream>
+        -:    5:#include <vector>
+        -:    6:#include <sstream>
+        -:    7:#include <map>
+        -:    8:#include <utility>
+        -:    9:
+        -:   10:#include <exception>
+        -:   11:
+        1:   12:int main()
+        -:   13:{
+        -:   14:/// Test 1: Build up graph from txt file, add & remove vertex.
+        -:   15://    myGraph mg1("graph_02.txt");
+        -:   16://
+        -:   17://    mg1.addVertex('w', {{'h', 1}, {'c', 2}, {'d', 3}});
+        -:   18://
+        -:   19://    mg1.removeVertex('w');
+        -:   20://    mg1.removeVertex('f');
+        -:   21://
+        -:   22://    mg1.addVertex('f', {{'c', 4}, {'d', 14}, {'e', 10}, {'g', 2}});
+        -:   23:
+        -:   24:/// Test 2: Build up graph from adding vertex part 1.
+        -:   25://    myGraph mg2;
+        -:   26://
+        -:   27://    mg2.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
+        -:   28://    mg2.addVertex('b', {{'a', 3}});
+        -:   29://    mg2.addVertex('d', {{'a', 6}});
+        -:   30://    mg2.addVertex('j', {{'a', 9}});
+        -:   31:
+        -:   32:/// Test 3: Build up graph from adding vertex part 2.
+        -:   33://    myGraph mg3;
+        -:   34://
+        -:   35://    mg3.addVertex('b', {{}});
+        -:   36://    mg3.addVertex('d', {{'b', 4}});
+        -:   37://    mg3.addVertex('j', {{'d', 5}, {'b', 12}});
+        -:   38://    mg3.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
+        -:   39:
+        -:   40:/// Test 4: FAIL -> tried to connect d to j but j was not exist.
+        -:   41://    myGraph mg4;
+        -:   42://
+        -:   43://    mg4.addVertex('b', {{'d', 4}});
+        -:   44://    mg4.addVertex('d', {{'j', 4}});
+        -:   45://    mg4.addVertex('j', {{'b', 5}});
+        -:   46://    mg4.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
+        -:   47:
+        -:   48:/// Test 5: Remove vertex & consider articulation points
+        -:   49://    myGraph mg5;
+        -:   50://
+        -:   51://    mg5.addVertex('a', {});
+        -:   52://    mg5.addVertex('b', {{'a', 2}});
+        -:   53://    mg5.addVertex('c', {});
+        -:   54://    mg5.addVertex('d', {{'c', 1}});
+        -:   55://    mg5.addVertex('f', {});
+        -:   56://    mg5.addVertex('e', {{'f', 5}});
+        -:   57://    mg5.addVertex('h', {});
+        -:   58://    mg5.addVertex('g', {{'h', 8}});
+        -:   59://    mg5.addVertex('i', {{'b', 4}, {'d', 6}, {'e', 3}, {'g', 9}});
+        -:   60://
+        -:   61://    mg5.removeVertex('i');
+        -:   62:
+        -:   63:/// Test 6: Remove vertex & consider articulation points part 2
+        -:   64://    myGraph mg6;
+        -:   65://
+        -:   66://    mg6.addVertex('a', {});
+        -:   67://    mg6.addVertex('b', {{'a', 2}});
+        -:   68://    mg6.addVertex('c', {});
+        -:   69://    mg6.addVertex('d', {{'c', 1}});
+        -:   70://    mg6.addVertex('f', {});
+        -:   71://    mg6.addVertex('e', {{'f', 5}});
+        -:   72://    mg6.addVertex('h', {});
+        -:   73://    mg6.addVertex('g', {{'h', 8}});
+        -:   74://    mg6.addVertex('i', {{'b', 4}, {'d', 6}, {'e', 3}, {'g', 9}});
+        -:   75://
+        -:   76://    mg6.removeVertex('a');
+        -:   77://    mg6.removeVertex('b');
+        -:   78://    mg6.removeVertex('f');
+        -:   79://    mg6.removeVertex('e');
+        -:   80://    mg6.removeVertex('h');
+        -:   81://    mg6.removeVertex('g');
+        -:   82://    mg6.removeVertex('c');
+        -:   83://    mg6.removeVertex('d');
+        -:   84://    mg6.removeVertex('i');
+        -:   85://
+        -:   86://    mg6.addVertex('i', {});
+        -:   87://
+        -:   88://    mg6.removeVertex('i');
+        -:   89://    mg6.removeVertex('i');
+        -:   90:
+        -:   91:/// Test 7: Remove vertex & consider articulation points part 3
+        -:   92://    myGraph mg7("graph_02.txt");
+        -:   93://
+        -:   94://    mg7.addVertex('w', {{'h', 1}, {'c', 2}, {'d', 3}});
+        -:   95://
+        -:   96://    mg7.removeVertex('w');
+        -:   97://    mg7.removeVertex('f');
+        -:   98://
+        -:   99://    mg7.addVertex('f', {{'c', 4}, {'d', 14}, {'e', 10}, {'g', 2}});
+        -:  100://
+        -:  101://    mg7.removeVertex('c');
+        -:  102://    mg7.removeVertex('a');
+        -:  103://    mg7.removeVertex('b');
+        -:  104://    mg7.removeVertex('h');
+        -:  105://    mg7.removeVertex('i');
+        -:  106://    mg7.removeVertex('g');
+        -:  107://    mg7.removeVertex('f');
+        -:  108://    mg7.removeVertex('d');
+        -:  109://    mg7.removeVertex('e');
+        -:  110://
+        -:  111://    // Itt már üres a gráf és jelezni-e kéne felénk.
+        -:  112://    mg7.removeVertex('f');
+        -:  113:
+        -:  114:/// Test 8: Dijkstra Shortest Path part 1
+        -:  115://    myGraph mg8("graph_02.txt");
+        -:  116://
+        -:  117://    mg8.dijkstra('a');
+        -:  118:
+        -:  119:/// Test 9: Dijkstra Shortest Path part 2
+        -:  120://    myGraph mg9("graph_01.txt");
+        -:  121://
+        -:  122://    mg9.dijkstra('h');
+        -:  123:
+        -:  124:/// Test 10: Dijkstra Shortest Path After Remove part 1
+        -:  125://    myGraph mg10("graph_02.txt");
+        -:  126://
+        -:  127://    mg10.dijkstra('a');
+        -:  128://
+        -:  129://    mg10.removeVertex('c');
+        -:  130://
+        -:  131://    mg10.dijkstra('w');
+        -:  132:
+        -:  133:/// Test 11: Dijkstra Shortest Path After Remove part 2
+        -:  134://    myGraph mg11("graph_02.txt");
+        -:  135://
+        -:  136://    mg11.dijkstra('a');
+        -:  137://
+        -:  138://    mg11.removeVertex('c');
+        -:  139://    mg11.removeVertex('d');
+        -:  140://    mg11.removeVertex('i');
+        -:  141://    mg11.removeVertex('e');
+        -:  142://    mg11.removeVertex('f');
+        -:  143://    mg11.removeVertex('g');
+        -:  144://    mg11.removeVertex('b');
+        -:  145://    mg11.removeVertex('h');
+        -:  146://    mg11.removeVertex('a');
+        -:  147://
+        -:  148://    mg11.dijkstra('h');
+        -:  149:
+        -:  150:/// Test 12: Prim's Minimum Spanning Tree part 1
+        -:  151://    myGraph mg12("graph_02.txt");
+        -:  152://
+        -:  153://    mg12.prim('b');
+        -:  154:
+        -:  155:/// Test 13: Prim's Minimum Spanning Tree part 2
+        -:  156://    myGraph mg13("graph_03.txt");
+        -:  157://
+        -:  158://    mg13.prim('b');
+        -:  159:
+        -:  160:/// Test 14: Prim's Minimum Spanning Tree part 3
+        -:  161://    myGraph mg14("graph_01.txt");
+        -:  162://
+        -:  163://    mg14.prim('g');
+        -:  164:
+        -:  165:/// Test 15: Prim's Minimum Spanning Tree After Remove part 1
+        -:  166://    myGraph mg15("graph_01.txt");
+        -:  167://
+        -:  168://    mg15.prim('b');
+        -:  169://    mg15.prim('a');
+        -:  170://
+        -:  171://    mg15.removeVertex('j');
+        -:  172://    mg15.removeVertex('h');
+        -:  173://    mg15.removeVertex('g');
+        -:  174://    mg15.removeVertex('d');
+        -:  175://
+        -:  176://    mg15.prim('c');
+        -:  177:
+        -:  178:/// Test 16: Prim's Minimum Spanning Tree After Remove part 2
+        -:  179://    myGraph mg16("graph_01.txt");
+        -:  180://
+        -:  181://    mg16.prim('b');
+        -:  182://    mg16.prim('a');
+        -:  183://
+        -:  184://    mg16.removeVertex('j');
+        -:  185://    mg16.removeVertex('h');
+        -:  186://    mg16.removeVertex('g');
+        -:  187://    mg16.removeVertex('d');
+        -:  188://
+        -:  189://    mg16.prim('c');
+        -:  190://
+        -:  191://    // g is not exist -> error
+        -:  192://    mg16.removeVertex('g');
+        -:  193://
+        -:  194://    mg16.removeVertex('i');
+        -:  195://    mg16.removeVertex('a');
+        -:  196://    mg16.removeVertex('b');
+        -:  197://    mg16.removeVertex('c');
+        -:  198://    mg16.removeVertex('e');
+        -:  199://    mg16.removeVertex('f');
+        -:  200://
+        -:  201://    // now we have an empty graph
+        -:  202://    // deletion can't be allowed
+        -:  203://    mg16.removeVertex('a');
+        -:  204:
+        -:  205:/// Test 17: Check Dijkstra & Prim After Adding Vertex part 1
+        -:  206://    myGraph mg17;
+        -:  207://
+        -:  208://    mg17.addVertex('a', {});
+        -:  209://    mg17.addVertex('b', {{'a', 2}});
+        -:  210://    mg17.addVertex('c', {});
+        -:  211://    mg17.addVertex('d', {{'c', 1}});
+        -:  212://    mg17.addVertex('f', {});
+        -:  213://    mg17.addVertex('e', {{'f', 5}});
+        -:  214://    mg17.addVertex('h', {});
+        -:  215://    mg17.addVertex('g', {{'h', 8}});
+        -:  216://    mg17.addVertex('i', {{'b', 4}, {'d', 6}, {'e', 3}, {'g', 9}});
+        -:  217://
+        -:  218://    mg17.prim('i');
+        -:  219://    mg17.dijkstra('i');
+        -:  220:
+        -:  221:/// Test 18: Check Dijkstra & Prim After Adding Vertex part 2
+        1:  222:    myGraph mg18;
+        1:  222-block  0
+    $$$$$:  222-block  1
+        -:  223:
+        1:  224:    mg18.addVertex('a', {});
+        1:  224-block  0
+    $$$$$:  224-block  1
+    $$$$$:  224-block  2
+        1:  225:    mg18.addVertex('d', {{'a', 4}});
+        1:  225-block  0
+        1:  225-block  1
+    $$$$$:  225-block  2
+    $$$$$:  225-block  3
+    $$$$$:  225-block  4
+    $$$$$:  225-block  5
+        1:  226:    mg18.addVertex('e', {{'a', 8}, {'d', 11}});
+        1:  226-block  0
+        1:  226-block  1
+    $$$$$:  226-block  2
+    $$$$$:  226-block  3
+    $$$$$:  226-block  4
+    $$$$$:  226-block  5
+        1:  227:    mg18.addVertex('b', {{'e', 7}});
+        1:  227-block  0
+        1:  227-block  1
+    $$$$$:  227-block  2
+    $$$$$:  227-block  3
+    $$$$$:  227-block  4
+    $$$$$:  227-block  5
+        1:  228:    mg18.addVertex('h', {{'d', 8}, {'b', 2}});
+        1:  228-block  0
+        1:  228-block  1
+    $$$$$:  228-block  2
+    $$$$$:  228-block  3
+    $$$$$:  228-block  4
+    $$$$$:  228-block  5
+        1:  229:    mg18.addVertex('i', {{'e', 1}, {'b', 6}});
+        1:  229-block  0
+        1:  229-block  1
+    $$$$$:  229-block  2
+    $$$$$:  229-block  3
+    $$$$$:  229-block  4
+    $$$$$:  229-block  5
+        1:  230:    mg18.addVertex('f', {{'i', 2}, {'h', 4}});
+        1:  230-block  0
+        1:  230-block  1
+    $$$$$:  230-block  2
+    $$$$$:  230-block  3
+    $$$$$:  230-block  4
+    $$$$$:  230-block  5
+        1:  231:    mg18.addVertex('c', {{'h', 7}, {'f', 14}});
+        1:  231-block  0
+        1:  231-block  1
+    $$$$$:  231-block  2
+    $$$$$:  231-block  3
+    $$$$$:  231-block  4
+    $$$$$:  231-block  5
+        1:  232:    mg18.addVertex('g', {{'c', 9}, {'f', 10}});
+        1:  232-block  0
+        1:  232-block  1
+    $$$$$:  232-block  2
+    $$$$$:  232-block  3
+    $$$$$:  232-block  4
+    $$$$$:  232-block  5
+        -:  233:
+        1:  234:    mg18.prim('a');
+        1:  235:    mg18.dijkstra('a');
+        1:  235-block  0
+        -:  236:
+        1:  237:    return 0;
+        1:  237-block  0
+        -:  238:}

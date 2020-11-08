@@ -11,6 +11,18 @@ my_class_graph.hpp
 /home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/my_class_graph.hpp
 iostream
 -
+fstream
+-
+vector
+-
+sstream
+-
+map
+-
+utility
+-
+exception
+-
 
 /home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/my_class_graph.hpp
 iostream

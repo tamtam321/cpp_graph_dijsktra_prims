@@ -1,0 +1,941 @@
+        -:    0:Source:/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/my_class_graph.hpp
+        -:    0:Graph:/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/cmake-build-debug-coverage/CMakeFiles/Code.dir/main.cpp.gcno
+        -:    0:Data:/home/tam/Desktop/PPKE/9_felev/adatszerk_2/nagyhf/2nagyhf/Code/cmake-build-debug-coverage/CMakeFiles/Code.dir/main.cpp.gcda
+        -:    0:Runs:1
+        -:    1:#ifndef CODE_MY_CLASS_GRAPH_HPP
+        -:    2:#define CODE_MY_CLASS_GRAPH_HPP
+        -:    3:
+        -:    4:#include <iostream>
+        -:    5:#include <map>
+        -:    6:#include <unordered_map>
+        -:    7:#include <fstream>
+        -:    8:#include <sstream>
+        -:    9:#include <utility>
+        -:   10:#include <tuple>
+        -:   11:#include <vector>
+        -:   12:#include <set>
+        -:   13:
+        -:   14:/// Infinity value
+        -:   15:# define INF 0x3f3f3f3f
+        -:   16:
+        -:   17:#include <exception>
+        -:   18:
+        -:   19:class InvalidFileName : public std::exception
+        -:   20:{
+        -:   21:public:
+    #####:   22:    const char *what() const noexcept { return "Invalid filename!"; }
+    %%%%%:   22-block  0
+        -:   23:};
+        -:   24:
+        -:   25:class UnderFlowException : public std::exception
+        -:   26:{
+        -:   27:public:
+    #####:   28:    const char *what() const noexcept { return "Graph is empty, you can't remove any node!"; }
+    %%%%%:   28-block  0
+        -:   29:};
+        -:   30:
+        -:   31:class EmptyGraph : public std::exception
+        -:   32:{
+        -:   33:public:
+    #####:   34:    const char *what() const noexcept { return "Graph is empty, can't do Dijkstra or Prim!"; }
+    %%%%%:   34-block  0
+        -:   35:};
+        -:   36:
+        -:   37:class myGraph
+        -:   38:{
+        -:   39:    // Mindegyik Node-nak van értéke és egy map, amivel számon tartom, hogy
+        -:   40:    // az adott csúcs a szomszédaival milyen súlyozású.
+        -:   41:    struct Node
+        -:   42:    {
+        -:   43:        char value;
+        -:   44:        std::map<char, int> adj;
+        -:   45:
+    #####:   46:        Node() = default;
+    %%%%%:   46-block  0
+        -:   47:        Node(char vrtx);
+        -:   48:        Node(char vrtx, std::map<char, int> adjacency);
+        -:   49:    };
+        -:   50:
+        -:   51:    // A gráf ebben tárolja a csúcsokat.
+        -:   52:    std::map<char, Node*> vertexes;
+        -:   53:
+        -:   54:    bool isEmpty();
+        -:   55:    void update_adjacency_after_insert(Node *p);
+        -:   56:    void update_adjacency_after_remove(Node *p);
+        -:   57:
+        -:   58:    // Depth First Search -> Ennek segítségével járom be a gráfot mélységében és térképezem fel, hogy melyek
+        -:   59:    // azok a csúcsok amelyeket nem lehet törölni, mert izoláció keletkezne.
+        -:   60:    void DFS(std::set<char> &visited, std::set<char> &articulationPoints, Node *vertex,
+        -:   61:             std::map<char, int> &visitedTime, std::map<char, int> &lowTime,
+        -:   62:             std::map<char, char> &parent, int &time);
+        -:   63:
+        -:   64:    // Itt jelzem boollal, hogy alkalmas-e törlésre.
+        -:   65:    bool is_articulation_point(Node *p);
+        -:   66:
+        -:   67:    // Ennek segítségével adom meg a Dijkstra kiiratásánál a kezdő és végpont közti legrövidebb útvonalat.
+        -:   68:    std::string dijkstra_path(std::map<char, char> parent, char from, char to);
+        -:   69:
+        -:   70:public:
+        1:   71:    myGraph() = default;
+        1:   71-block  0
+        -:   72:    ~myGraph();
+        -:   73:    myGraph(std::string file_name);
+        -:   74:
+        -:   75:    myGraph(const myGraph &mg) = delete;
+        -:   76:    myGraph &operator=(const myGraph &mg) = delete;
+        -:   77:    myGraph &operator=(myGraph &&mg) = delete;
+        -:   78:    myGraph(myGraph &&mg) = delete;
+        -:   79:
+        -:   80:    void addVertex(char vrtx, std::map<char, int> adjacency);
+        -:   81:    void removeVertex(char vrtx);
+        -:   82:    void dijkstra(char src);
+        -:   83:    void prim(char src);
+        -:   84:};
+        -:   85:
+        1:   86:myGraph::Node::Node(char vrtx)
+        1:   86-block  0
+        -:   87:{
+        1:   88:    this->value = vrtx;
+        1:   89:}
+        -:   90:
+        8:   91:myGraph::Node::Node(char vrtx, std::map<char, int> adjacency)
+        8:   91-block  0
+    $$$$$:   91-block  1
+        -:   92:{
+        8:   93:    this->value = vrtx;
+        8:   94:    this->adj = adjacency;
+        8:   95:}
+        8:   95-block  0
+        -:   96:
+        1:   97:myGraph::~myGraph()
+        1:   97-block  0
+        -:   98:{
+        1:   99:    std::map<char, Node*>::iterator it;
+        1:   99-block  0
+        -:  100:    Node *tmp;
+        -:  101:
+       10:  102:    for (it = vertexes.begin(); it != vertexes.end(); it++)
+       10:  102-block  0
+        9:  102-block  1
+        -:  103:    {
+        9:  104:        tmp = it->second;
+        9:  104-block  0
+        9:  105:        delete tmp;
+        9:  105-block  0
+        -:  106:    }
+        1:  107:}
+        -:  108:
+        -:  109:// Beolvasom a fájlt és a while ciklus minden iterációjánál 3 sort dolgozok fel (csúcs, szomszédok, súlyok) és
+        -:  110:// ennek megfelelően hozom létre a node-dot és töltöm fel a vertexes mappet.
+    #####:  111:myGraph::myGraph(std::string file_name)
+    %%%%%:  111-block  0
+    $$$$$:  111-block  1
+        -:  112:{
+    #####:  113:    std::ifstream f_in(file_name);
+    $$$$$:  113-block  0
+        -:  114:
+    #####:  115:    if (f_in.fail())
+    %%%%%:  115-block  0
+    %%%%%:  115-block  1
+        -:  116:    {
+    #####:  117:        throw InvalidFileName();
+    %%%%%:  117-block  0
+        -:  118:    }
+        -:  119:
+    #####:  120:    std::string str_vertex;
+    %%%%%:  120-block  0
+    $$$$$:  120-block  1
+    #####:  121:    std::string str_adjacent;
+    $$$$$:  121-block  0
+    #####:  122:    std::string str_distance;
+    $$$$$:  122-block  0
+    #####:  123:    std::stringstream ss;
+    $$$$$:  123-block  0
+    #####:  124:    std::stringstream ss2;
+    %%%%%:  124-block  0
+    %%%%%:  124-block  1
+    $$$$$:  124-block  2
+        -:  125:
+    #####:  126:    while (!f_in.eof())
+    %%%%%:  126-block  0
+    %%%%%:  126-block  1
+        -:  127:    {
+    #####:  128:        Node *p = new Node();
+    %%%%%:  128-block  0
+    %%%%%:  128-block  1
+        -:  129:
+    #####:  130:        std::getline(f_in, str_vertex);
+    #####:  131:        std::getline(f_in, str_adjacent);
+    %%%%%:  131-block  0
+    #####:  132:        std::getline(f_in, str_distance);
+    %%%%%:  132-block  0
+        -:  133:
+    #####:  134:        p->value = str_vertex[0];
+    %%%%%:  134-block  0
+        -:  135:
+    #####:  136:        ss << str_adjacent;
+    %%%%%:  136-block  0
+    #####:  137:        ss2 << str_distance;
+    %%%%%:  137-block  0
+        -:  138:
+        -:  139:        // Mivel annyi súly van, mint ahány szomszéd, ezért elég ha a ciklus
+        -:  140:        // annyiszor iterál, ameddig van szomszédot beolvasni.
+        -:  141:        // Megadom a Node-ban lévő adj mapnek a hozzá tartozó szomszédokat meg a megfelelő súlyt.
+    #####:  142:        for (char ch_adj; ss >> ch_adj;)
+    %%%%%:  142-block  0
+    %%%%%:  142-block  1
+    %%%%%:  142-block  2
+    %%%%%:  142-block  3
+        -:  143:        {
+        -:  144:            int adj_dis;
+    #####:  145:            ss2 >> adj_dis;
+    %%%%%:  145-block  0
+    #####:  146:            p->adj.insert(std::pair<char, int>(ch_adj, adj_dis));
+    %%%%%:  146-block  0
+    $$$$$:  146-block  1
+        -:  147:
+        -:  148:            // Itt szedem ki a vesszőket.
+    #####:  149:            if (ss.peek() == ',' && ss2.peek() == ',')
+    %%%%%:  149-block  0
+    %%%%%:  149-block  1
+    %%%%%:  149-block  2
+    %%%%%:  149-block  3
+    %%%%%:  149-block  4
+    %%%%%:  149-block  5
+    %%%%%:  149-block  6
+        -:  150:            {
+    #####:  151:                ss.ignore();
+    %%%%%:  151-block  0
+    #####:  152:                ss2.ignore();
+    %%%%%:  152-block  0
+        -:  153:            }
+        -:  154:        }
+        -:  155:
+    #####:  156:        ss.clear();
+    %%%%%:  156-block  0
+    #####:  157:        ss2.clear();
+    %%%%%:  157-block  0
+        -:  158:
+        -:  159:        // Itt tartom számon a gráfnak, hogy milyen node-jai vannak.
+    #####:  160:        vertexes[p->value] = p;
+    %%%%%:  160-block  0
+    %%%%%:  160-block  1
+        -:  161:    }
+    #####:  162:}
+        -:  163:
+        -:  164:// Új node befűzése után, a szomszédjaihoz hozzáadom az új node értékét és a súlyt.
+        -:  165:// Szóval frissítem a szomszédságokat.
+        8:  166:void myGraph::update_adjacency_after_insert(Node *p)
+        -:  167:{
+       22:  168:    for (auto [v_key, v_val] : p->adj)
+        8:  168-block  0
+       22:  168-block  1
+       14:  168-block  2
+        -:  169:    {
+       14:  170:        vertexes[v_key]->adj.insert(std::pair<char, int>(p->value, v_val));
+       14:  170-block  0
+       14:  170-block  1
+    $$$$$:  170-block  2
+        -:  171:    }
+        8:  172:}
+        8:  172-block  0
+        -:  173:
+        -:  174:// Üres-e a gráf
+       11:  175:bool myGraph::isEmpty()
+        -:  176:{
+       11:  177:    return vertexes.empty();
+       11:  177-block  0
+        -:  178:}
+        -:  179:
+        -:  180:// Ha üres a gráf, akkor csak beszúrom a node-dot és  nem frissítek szomszédságot.
+        -:  181:// Különben szomszédságot is frissíteni kell.
+        9:  182:void myGraph::addVertex(char vrtx, std::map<char, int> adjacency)
+        -:  183:{
+        9:  184:    if (isEmpty())
+        9:  184-block  0
+        -:  185:    {
+        1:  186:        Node *p = new Node(vrtx);
+        1:  186-block  0
+        1:  187:        vertexes[p->value] = p;
+        1:  188:        return;
+        -:  189:    }
+        -:  190:    else
+        -:  191:    {
+        8:  192:        Node *p = new Node(vrtx, adjacency);
+        8:  192-block  0
+        8:  192-block  1
+        8:  192-block  2
+    $$$$$:  192-block  3
+    $$$$$:  192-block  4
+        8:  193:        update_adjacency_after_insert(p);
+        8:  194:        vertexes[p->value] = p;
+        -:  195:    }
+        -:  196:}
+        -:  197:
+        -:  198:// A törölt node-nak a szomszédjaiból kiszedem az adott node-dot.
+        -:  199:// Szóval frissítem törlés után a szomszédságot.
+    #####:  200:void myGraph::update_adjacency_after_remove(Node *p)
+        -:  201:{
+    #####:  202:    for (auto [v_key, v_val] : p->adj)
+    %%%%%:  202-block  0
+    %%%%%:  202-block  1
+    %%%%%:  202-block  2
+    %%%%%:  202-block  3
+        -:  203:    {
+    #####:  204:        vertexes[v_key]->adj.erase(p->value);
+    %%%%%:  204-block  0
+        -:  205:    }
+    #####:  206:}
+    %%%%%:  206-block  0
+        -:  207:
+        -:  208:// Ha üres akkor nem lehet törölni és exception-t dobok.
+        -:  209:// Ha nem létező node-dot akarok kitörölni azt is jelzem.
+        -:  210:// Utána megnézem hogy a node articulation pont-e, mert ha igen akkor törlés után
+        -:  211:// más node-dok vagy részgráfok izolálódnak, amit nem engedek és jelzem.
+        -:  212:// Csak olyan node-dot szabad törölni, ami nem jár más node-dok és részgráfok izolációjával.
+        -:  213:// Különben meg törlöm a node-dot a gráfból és frissítem a szomszédságot.
+    #####:  214:void myGraph::removeVertex(char vrtx)
+        -:  215:{
+    #####:  216:    if (isEmpty())
+    %%%%%:  216-block  0
+        -:  217:    {
+    #####:  218:        throw UnderFlowException();
+    %%%%%:  218-block  0
+        -:  219:    }
+    #####:  220:    else if(vertexes.find(vrtx) == vertexes.end())
+    %%%%%:  220-block  0
+    %%%%%:  220-block  1
+    $$$$$:  220-block  2
+        -:  221:    {
+        -:  222:        try
+        -:  223:        {
+    #####:  224:            throw vrtx;
+    %%%%%:  224-block  0
+        -:  225:        }
+    =====:  226:        catch (char ex)
+    $$$$$:  226-block  0
+    $$$$$:  226-block  1
+    $$$$$:  226-block  2
+        -:  227:        {
+    =====:  228:            std::string s(1, ex);
+    $$$$$:  228-block  0
+    =====:  229:            std::cout << "The \"" + s + "\" node is not exist, you can't remove it!";
+    $$$$$:  229-block  0
+    $$$$$:  229-block  1
+    $$$$$:  229-block  2
+    $$$$$:  229-block  3
+    $$$$$:  229-block  4
+    $$$$$:  229-block  5
+    $$$$$:  229-block  6
+        -:  230:        }
+        -:  231:
+    =====:  232:        return;
+        -:  233:    }
+        -:  234:
+    #####:  235:    Node *p = vertexes[vrtx];
+    %%%%%:  235-block  0
+        -:  236:
+    #####:  237:    if (is_articulation_point(p))
+        -:  238:    {
+        -:  239:        try
+        -:  240:        {
+    #####:  241:            throw vrtx;
+    %%%%%:  241-block  0
+        -:  242:        }
+    =====:  243:        catch (char ex)
+    $$$$$:  243-block  0
+    $$$$$:  243-block  1
+    $$$$$:  243-block  2
+        -:  244:        {
+    =====:  245:            std::string s(1, ex);
+    $$$$$:  245-block  0
+    =====:  246:            std::cout << "Can't remove \"" + s + "\" node, because\n"
+    $$$$$:  246-block  0
+    $$$$$:  246-block  1
+    $$$$$:  246-block  2
+    $$$$$:  246-block  3
+    $$$$$:  246-block  4
+        -:  247:                         "this is an articulation point!\n"
+    =====:  248:                         "Deletion is allowed, if no other nodes or subtrees are isolated after remove.\n" << std::endl;
+    $$$$$:  248-block  0
+    $$$$$:  248-block  1
+    $$$$$:  248-block  2
+        -:  249:        }
+        -:  250:
+    =====:  251:        return;
+        -:  252:    }
+        -:  253:    else
+        -:  254:    {
+    #####:  255:        update_adjacency_after_remove(p);
+    %%%%%:  255-block  0
+    #####:  256:        vertexes.erase(p->value);
+    #####:  257:        delete p;
+    %%%%%:  257-block  0
+        -:  258:    }
+        -:  259:}
+        -:  260:
+        -:  261:// Mélységi kereséssel derítem fel, hogy a gráfban melyek azok a csúcsok, amik izolációhoz vezethet.
+    #####:  262:void myGraph::DFS(std::set<char> &visited, std::set<char> &articulationPoints,
+        -:  263:                  Node *vertex, std::map<char, int> &visitedTime,
+        -:  264:                  std::map<char, int> &lowTime, std::map<char, char> &parent, int &time)
+        -:  265:{
+        -:  266:    // Itt tartom számon a meglátogatott csúcsokat.
+    #####:  267:    visited.insert(vertex->value);
+    %%%%%:  267-block  0
+        -:  268:
+        -:  269:    // Ezzel jelölöm meg, hogy a csúcs a hanyadik meglátogatott node.
+    #####:  270:    visitedTime.insert({vertex->value, time});
+    $$$$$:  270-block  0
+        -:  271:
+        -:  272:    // Az összes eddig meglátogatott szomszédok, amik az adott törlendő csúcson
+        -:  273:    // keresztül elérhetőek, azok közül a minimum meglátogatott érték.
+        -:  274:    // Ennek a segítségével, meg tudjuk mondani, hogy melyik pont okoz izolációt.
+    #####:  275:    lowTime.insert({vertex->value, time});
+    %%%%%:  275-block  0
+    $$$$$:  275-block  1
+        -:  276:
+        -:  277:    // Meglátogatott érték növelése minden eddig nem látogatott node meglátogatás után.
+    #####:  278:    time++;
+        -:  279:
+        -:  280:    // Egy node-nak hány eddig nem látogatott gyereke van.
+    #####:  281:    int childCount = 0;
+        -:  282:
+        -:  283:    // Izolációt okozó pont-e ?
+    #####:  284:    bool isArticulationPoint = false;
+        -:  285:
+        -:  286:    // Elindulok a törlendő node szomszédjai felé és rekurzívan bejárom onnantól a gráfot.
+    #####:  287:    for (auto [_adj, distance] : vertex->adj)
+    %%%%%:  287-block  0
+    %%%%%:  287-block  1
+    %%%%%:  287-block  2
+    %%%%%:  287-block  3
+        -:  288:    {
+        -:  289:        // Ha vertexnek van szülője és ha a szomszédja a szülője akkor nem foglalkozunk vele és megyünk
+        -:  290:        // a következő szomszédra.
+    #####:  291:        if (parent.find(vertex->value) != parent.end() && _adj == parent[vertex->value])
+    %%%%%:  291-block  0
+    %%%%%:  291-block  1
+    %%%%%:  291-block  2
+    %%%%%:  291-block  3
+    %%%%%:  291-block  4
+    %%%%%:  291-block  5
+    $$$$$:  291-block  6
+    $$$$$:  291-block  7
+        -:  292:        {
+    #####:  293:            continue;
+    %%%%%:  293-block  0
+        -:  294:        }
+        -:  295:
+        -:  296:        // Ha még nincs meglátogatva a szomszéd node, akkor beállítom a szülőjét, aki az előző node ahonnan elléptünk.
+        -:  297:        // A szülőnek megnöveljük a gyerekszámlálóját.
+        -:  298:        // Aztán rekurzívan megyünk tovább a gyerek szomszédjaira.
+    #####:  299:        if (!visited.contains(_adj))
+    %%%%%:  299-block  0
+    %%%%%:  299-block  1
+        -:  300:        {
+    #####:  301:            parent.insert({_adj, vertex->value});
+    %%%%%:  301-block  0
+    $$$$$:  301-block  1
+    #####:  302:            childCount++;
+    #####:  303:            DFS(visited, articulationPoints, vertexes[_adj], visitedTime, lowTime, parent, time);
+    %%%%%:  303-block  0
+    %%%%%:  303-block  1
+        -:  304:
+        -:  305:            // Ha a vertexnek a meglátogatott értéke az kisebb vagy egyenlő, mint a
+        -:  306:            // szomszédjának a min meglátogatott értéke, akkor az egy lehetséges izolációt okozó pont.
+    #####:  307:            if (visitedTime[vertex->value] <= lowTime[_adj])
+    %%%%%:  307-block  0
+    %%%%%:  307-block  1
+    %%%%%:  307-block  2
+        -:  308:            {
+    #####:  309:                isArticulationPoint = true;
+    %%%%%:  309-block  0
+        -:  310:            }
+        -:  311:            else // Különben, a vertex és szomszéd lowTime-ja között kiválasztom a legkisebbet és azzal írom felül a vertex lowTime-ját.
+        -:  312:            {
+    #####:  313:                lowTime[vertex->value] = std::min(lowTime[vertex->value], lowTime[_adj]);
+    %%%%%:  313-block  0
+    %%%%%:  313-block  1
+    %%%%%:  313-block  2
+    %%%%%:  313-block  3
+        -:  314:            }
+        -:  315:        }
+        -:  316:        else // Ha már meg van látogatva a vertex, akkor ugyanúgy felülírom a lowTime-ját, ha szomszédnak kisebb a lowTime-ja.
+        -:  317:        {
+    #####:  318:            lowTime[vertex->value] = std::min(lowTime[vertex->value], lowTime[_adj]);
+    %%%%%:  318-block  0
+    %%%%%:  318-block  1
+    %%%%%:  318-block  2
+    %%%%%:  318-block  3
+        -:  319:        }
+        -:  320:    }
+        -:  321:
+        -:  322:    // Ha a vertexnek nincs szülője vagyis az a root és 2 vagy több gyereke van akkor az egy
+        -:  323:    // izolációt okozó pont.
+        -:  324:    // Vagy ha vertexnek van szülője és izolációt tud okozni, akkor az egy izolációt okozó pont.
+    #####:  325:    if ((parent.find(vertex->value) == parent.end() && childCount >= 2) ||
+    %%%%%:  325-block  0
+    %%%%%:  325-block  1
+    %%%%%:  325-block  2
+    %%%%%:  325-block  3
+    %%%%%:  325-block  4
+    $$$$$:  325-block  5
+    #####:  326:    (parent.find(vertex->value) != parent.end() && isArticulationPoint))
+    %%%%%:  326-block  0
+    %%%%%:  326-block  1
+    %%%%%:  326-block  2
+    %%%%%:  326-block  3
+    $$$$$:  326-block  4
+    $$$$$:  326-block  5
+        -:  327:    {
+    #####:  328:        articulationPoints.insert(vertex->value);
+    %%%%%:  328-block  0
+        -:  329:    }
+    #####:  330:}
+    %%%%%:  330-block  0
+        -:  331:
+        -:  332:// Itt adom meg, hogy a node az izolációt okoz-e ha törölném.
+    #####:  333:bool myGraph::is_articulation_point(Node *p)
+        -:  334:{
+        -:  335:    // solution
+    #####:  336:    bool sol = false;
+        -:  337:
+        -:  338:    // A DFS metódusnál jellemeztem
+    #####:  339:    int time = 0;
+    #####:  340:    std::set<char> visited;
+    %%%%%:  340-block  0
+    $$$$$:  340-block  1
+    #####:  341:    std::map<char, int> visitedTime;
+    $$$$$:  341-block  0
+    #####:  342:    std::map<char, int> lowTime;
+    $$$$$:  342-block  0
+        -:  343:
+        -:  344:    // Itt tárolom a gráfban talált izolációt okozó pontokat.
+    #####:  345:    std::set<char> articulationPoints;
+    $$$$$:  345-block  0
+        -:  346:
+        -:  347:    // A csúcsnak a szülője az az előző node ahonnan elindulva eljutottam hozzá.
+    #####:  348:    std::map<char, char> parent;
+    $$$$$:  348-block  0
+        -:  349:
+        -:  350:    // Törlendő node és egyben ő lesz a root is.
+    #####:  351:    Node *startVertex = p;
+        -:  352:
+        -:  353:    // Ezzel töltöm fel az articulationPoints settet.
+    #####:  354:    DFS(visited, articulationPoints, startVertex, visitedTime, lowTime, parent, time);
+        -:  355:
+        -:  356:    // Ha a törlendő csúcs benne van a setben akkor jelezzük, hogy azt nem szabad törölni.
+    #####:  357:    if (articulationPoints.contains(p->value))
+    %%%%%:  357-block  0
+    %%%%%:  357-block  1
+        -:  358:    {
+    #####:  359:        sol = true;
+    %%%%%:  359-block  0
+        -:  360:    }
+        -:  361:
+    #####:  362:    return sol;
+    %%%%%:  362-block  0
+    %%%%%:  362-block  1
+        -:  363:}
+        -:  364:
+        -:  365:// Itt adom meg a legrövidebb út bejárását a source és a végpont között, amit majd kiiratok.
+        -:  366:// Ha parent map segítségével építem fel az utat.
+        -:  367:// A végponttól indulok aztán a szülőn keresztül visszafele lépegetve eljutok a source-ig.
+        9:  368:std::string myGraph::dijkstra_path(std::map<char, char> parent, char from, char to)
+        -:  369:{
+        9:  370:    std::string path = "";
+        9:  370-block  0
+        -:  371:
+        9:  372:    path += to;
+       18:  373:    std::string arrow = "--->";
+        9:  373-block  0
+        9:  373-block  1
+    $$$$$:  373-block  2
+        -:  374:
+       28:  375:    while (from != to)
+       28:  375-block  0
+        -:  376:    {
+       19:  377:        path = parent[to] + arrow + path;
+       19:  377-block  0
+       19:  377-block  1
+       19:  377-block  2
+       19:  377-block  3
+    $$$$$:  377-block  4
+    $$$$$:  377-block  5
+       19:  378:        to = parent[to];
+       19:  378-block  0
+        -:  379:    }
+        -:  380:
+       18:  381:    return path;
+        9:  381-block  0
+        9:  381-block  1
+        -:  382:}
+        -:  383:
+        1:  384:void myGraph::dijkstra(char src)
+        -:  385:{
+        -:  386:    // Ha üres a gráf akkor nem lehet rajta elvégezni Dijkstra-t.
+        -:  387:    // Vagy ha olyan kiindulási csúcsot adok meg ami nem is létezik, akkor jelzem a hibát és nem hajtom
+        -:  388:    // végre a Dijkstra-t.
+        1:  389:    if (isEmpty())
+        1:  389-block  0
+        -:  390:    {
+    #####:  391:        throw EmptyGraph();
+    %%%%%:  391-block  0
+        -:  392:    }
+        1:  393:    else if (vertexes.find(src) == vertexes.end())
+        1:  393-block  0
+        1:  393-block  1
+    $$$$$:  393-block  2
+        -:  394:    {
+    #####:  395:        std::string s(1, src);
+    %%%%%:  395-block  0
+    $$$$$:  395-block  1
+    #####:  396:        std::cout << "The \"" + s + "\" node is not exist, so it could not be the source of the Dijkstra's algorithm.\n\n";
+    %%%%%:  396-block  0
+    %%%%%:  396-block  1
+    %%%%%:  396-block  2
+    $$$$$:  396-block  3
+    $$$$$:  396-block  4
+    $$$$$:  396-block  5
+    $$$$$:  396-block  6
+    #####:  397:        return;
+        -:  398:    }
+        -:  399:
+        -:  400:    // Melyik csúcsok lettek eddig meglátogatva
+        2:  401:    std::map<char, bool> visited;
+        1:  401-block  0
+    $$$$$:  401-block  1
+        -:  402:
+        -:  403:    // Csúcsok szülője, vagyis melyik előző csúcsból jutottam oda.
+        2:  404:    std::map<char, char> parent;
+    $$$$$:  404-block  0
+        -:  405:
+        -:  406:    // Itt tárolom el a végpontokat és, hogy mekkora az odavezető út.
+        2:  407:    std::map<char, int> dist;
+    $$$$$:  407-block  0
+        -:  408:
+        -:  409:    // Itt tartom számon, hogy melyik csúcs még nincs meglátogatva.
+        2:  410:    std::set<char> unvisited;
+    $$$$$:  410-block  0
+        -:  411:
+        -:  412:    // Ebben tárolom el, hogy jelenleg, az adott esetben melyik
+        -:  413:    // melyik a rövidebb út az csúcshoz.
+        1:  414:    int curr_shortest_dis = INF;
+        -:  415:
+        -:  416:    //
+        1:  417:    std::pair<char, int> curr_process_vertex = std::make_pair('!', INF);
+        -:  418:
+        -:  419:    // Csinálok egy másolatot a vertexes-ről, hogy majd azzal dolgozzak, mert
+        -:  420:    // előfordul hogy map-ba bekeről egy felesleges elem és nem szeretném hogy az eredetin változtasson.
+        -:  421:    // Azzal nincs baj ha a másolatot változtatja.
+        2:  422:    std::map<char, Node*> vertexes_copy = vertexes;
+        1:  422-block  0
+    $$$$$:  422-block  1
+        -:  423:
+        -:  424:    // Beállítások:
+        -:  425:    // * d-ben hogy a csúcsokhoz vezető út az legyen az elején mindegyik végtelen.
+        -:  426:    // * visited-ben mindegyik csúcsot false-ra állítani, mert még nincsenek meglátogatva.
+        -:  427:    // * unvisited settet feltölteni
+       10:  428:    for (auto [vertex, distance] : vertexes_copy)
+        1:  428-block  0
+       10:  428-block  1
+        9:  428-block  2
+        9:  428-block  3
+        -:  429:    {
+        9:  430:        dist.insert(std::make_pair(vertex, INF));
+        9:  430-block  0
+    $$$$$:  430-block  1
+    $$$$$:  430-block  2
+        9:  431:        visited.insert(std::make_pair(vertex, false));
+        9:  431-block  0
+        9:  431-block  1
+    $$$$$:  431-block  2
+    $$$$$:  431-block  3
+        9:  432:        unvisited.insert(vertex);
+        9:  432-block  0
+        -:  433:    }
+        -:  434:
+        -:  435:    // A source távolsága magától az nulla.
+        1:  436:    dist[src] = 0;
+        1:  436-block  0
+        -:  437:
+        -:  438:    // A source-tól fogunk elindulni.
+        -:  439:    // A curr_vertex amelyik csúcson éppen vagyunk.
+        1:  440:    Node *curr_vertex = vertexes_copy[src];
+        1:  440-block  0
+        1:  440-block  1
+        -:  441:
+        -:  442:    // Amíg nem látogattuk meg az összes csúcsot, addig pörög a ciklus.
+       10:  443:    while (!unvisited.empty())
+       10:  443-block  0
+        -:  444:    {
+        -:  445:        // Ahol vagyok megnézem a szomszédokat.
+       37:  446:        for (auto [adjacent, adj_distance] : curr_vertex->adj)
+        9:  446-block  0
+       37:  446-block  1
+       28:  446-block  2
+       28:  446-block  3
+        -:  447:        {
+        -:  448:            // Megnézem, hogy tudok-e rövidebb úton odamenni
+       28:  449:            curr_shortest_dis = std::min(dist[curr_vertex->value] + adj_distance, dist[adjacent]);
+       28:  449-block  0
+       28:  449-block  1
+        -:  450:
+       28:  451:            if (curr_shortest_dis < dist[adjacent])
+       28:  451-block  0
+        -:  452:            {
+       10:  453:                if (parent.find(adjacent) == parent.end())
+       10:  453-block  0
+       10:  453-block  1
+    $$$$$:  453-block  2
+        -:  454:                {
+        8:  455:                    parent.insert(std::make_pair(adjacent, curr_vertex->value));
+        8:  455-block  0
+        8:  455-block  1
+    $$$$$:  455-block  2
+        8:  456:                    dist[adjacent] = curr_shortest_dis;
+        8:  456-block  0
+        8:  456-block  1
+        -:  457:                }
+        -:  458:                else
+        -:  459:                {
+        2:  460:                    parent[adjacent] = curr_vertex->value;
+        2:  460-block  0
+        2:  461:                    dist[adjacent] = curr_shortest_dis;
+        2:  461-block  0
+        2:  461-block  1
+        -:  462:                }
+        -:  463:            }
+        -:  464:        }
+        -:  465:
+        9:  466:        unvisited.erase(curr_vertex->value);
+        9:  466-block  0
+        9:  467:        visited[curr_vertex->value] = true;
+        9:  467-block  0
+        9:  468:        curr_process_vertex = std::make_pair('!', INF);
+        9:  468-block  0
+        9:  468-block  1
+    $$$$$:  468-block  2
+    $$$$$:  468-block  3
+        -:  469:
+       90:  470:        for (auto [vertex, distance] : dist)
+       90:  470-block  0
+       81:  470-block  1
+       81:  470-block  2
+        -:  471:        {
+       81:  472:            if (visited[vertex] == false)
+       81:  472-block  0
+        -:  473:            {
+       36:  474:                if (curr_process_vertex.second >= distance)
+       36:  474-block  0
+        -:  475:                {
+       16:  476:                    curr_process_vertex = std::make_pair(vertex, distance);
+       16:  476-block  0
+       16:  476-block  1
+        -:  477:                }
+        -:  478:            }
+        -:  479:        }
+        -:  480:
+        9:  481:        curr_vertex = vertexes_copy[curr_process_vertex.first];
+        9:  481-block  0
+        9:  481-block  1
+        -:  482:    }
+        -:  483:
+        1:  484:    std::cout << "Dijkstra's Shortest Path:" << std::endl;
+        1:  484-block  0
+        1:  484-block  1
+        1:  485:    std::cout << "Direction     Distance       Path" << std::endl;
+        1:  485-block  0
+        1:  485-block  1
+        -:  486:
+       10:  487:    for (auto [vertex, distance] : dist)
+        1:  487-block  0
+       10:  487-block  1
+        9:  487-block  2
+        -:  488:    {
+       18:  489:        std::string path = dijkstra_path(parent, src, vertex);
+        9:  489-block  0
+        9:  489-block  1
+    $$$$$:  489-block  2
+    $$$$$:  489-block  3
+        9:  490:        std::cout << src << "->" << vertex << "          " << distance << "              " << path << std::endl;
+        9:  490-block  0
+        9:  490-block  1
+        9:  490-block  2
+        9:  490-block  3
+        9:  490-block  4
+        9:  490-block  5
+        9:  490-block  6
+        -:  491:    }
+        -:  492:
+        1:  493:    std::cout << std::endl;
+        1:  493-block  0
+        -:  494:}
+        -:  495:
+        1:  496:void myGraph::prim(char src)
+        -:  497:{
+        -:  498:    // Ha üres a gráf akkor nem lehet rajta elvégezni Primet.
+        -:  499:    // Vagy ha olyan kiindulási csúcsot adok meg ami nem is létezik, akkor jelzem a hibát és nem hajtom
+        -:  500:    // végre a Primet.
+        1:  501:    if (isEmpty())
+        1:  501-block  0
+        -:  502:    {
+    #####:  503:        throw EmptyGraph();
+    %%%%%:  503-block  0
+        -:  504:    }
+        1:  505:    else if (vertexes.find(src) == vertexes.end())
+        1:  505-block  0
+        1:  505-block  1
+    $$$$$:  505-block  2
+        -:  506:    {
+    #####:  507:        std::string s(1, src);
+    %%%%%:  507-block  0
+    $$$$$:  507-block  1
+    #####:  508:        std::cout << "The \"" + s + "\" node is not exist, so it could not be the source of the Prim's algorithm.\n\n";
+    %%%%%:  508-block  0
+    %%%%%:  508-block  1
+    %%%%%:  508-block  2
+    $$$$$:  508-block  3
+    $$$$$:  508-block  4
+    $$$$$:  508-block  5
+    $$$$$:  508-block  6
+    #####:  509:        return;
+        -:  510:    }
+        -:  511:
+        2:  512:    std::map<char, Node*> vertexes_copy = vertexes;
+        1:  512-block  0
+    $$$$$:  512-block  1
+        2:  513:    std::map<char, char> parent;
+        1:  513-block  0
+    $$$$$:  513-block  1
+        2:  514:    std::map<char, bool> visited;
+    $$$$$:  514-block  0
+        2:  515:    std::map<char, int> mst;
+    $$$$$:  515-block  0
+        2:  516:    std::set<char> unvisited;
+        1:  516-block  0
+    $$$$$:  516-block  1
+        -:  517:
+       10:  518:    for (auto [vertex, distance] : vertexes_copy)
+       10:  518-block  0
+        9:  518-block  1
+        9:  518-block  2
+        -:  519:    {
+        9:  520:        mst.insert(std::make_pair(vertex, INF));
+        9:  520-block  0
+    $$$$$:  520-block  1
+    $$$$$:  520-block  2
+        9:  521:        visited.insert(std::make_pair(vertex, false));
+        9:  521-block  0
+        9:  521-block  1
+    $$$$$:  521-block  2
+    $$$$$:  521-block  3
+        9:  522:        parent.insert(std::make_pair(vertex, '!'));
+        9:  522-block  0
+        9:  522-block  1
+    $$$$$:  522-block  2
+    $$$$$:  522-block  3
+        9:  523:        unvisited.insert(vertex);
+        9:  523-block  0
+        -:  524:    }
+        -:  525:
+        1:  526:    mst[src] = 0;
+        1:  526-block  0
+        1:  527:    Node *curr_vertex = vertexes_copy[src];
+        1:  527-block  0
+        1:  528:    std::pair<char, int> curr_min_vertex = std::make_pair('!', INF);
+        1:  529:    unvisited.erase(src);
+        1:  529-block  0
+        1:  530:    visited[curr_vertex->value] = true;
+        1:  530-block  0
+        1:  531:    parent[src] = src;
+        1:  531-block  0
+        1:  531-block  1
+        -:  532:
+        9:  533:    while (!unvisited.empty())
+        9:  533-block  0
+        -:  534:    {
+       34:  535:        for (auto [adjacent, adj_distance] : curr_vertex->adj)
+        8:  535-block  0
+       34:  535-block  1
+       26:  535-block  2
+       26:  535-block  3
+        -:  536:        {
+       26:  537:            if (visited[adjacent] == false)
+       26:  537-block  0
+        -:  538:            {
+       14:  539:                if (adj_distance < mst[adjacent])
+       14:  539-block  0
+       14:  539-block  1
+        -:  540:                {
+       13:  541:                    mst[adjacent] = adj_distance;
+       13:  541-block  0
+       13:  542:                    parent[adjacent] = curr_vertex->value;
+       13:  542-block  0
+       13:  542-block  1
+        -:  543:                }
+        -:  544:            }
+        -:  545:        }
+        -:  546:
+       80:  547:        for (auto [vertex, distance] : mst)
+        8:  547-block  0
+       80:  547-block  1
+       72:  547-block  2
+       72:  547-block  3
+        -:  548:        {
+       72:  549:            if (curr_min_vertex.second > distance)
+        -:  550:            {
+       39:  551:                if (visited[vertex] == false)
+       39:  551-block  0
+       39:  551-block  1
+        -:  552:                {
+       11:  553:                    curr_min_vertex = std::make_pair(vertex, distance);
+       11:  553-block  0
+       11:  553-block  1
+        -:  554:                }
+        -:  555:            }
+        -:  556:        }
+        -:  557:
+        8:  558:        unvisited.erase(curr_min_vertex.first);
+        8:  558-block  0
+        8:  559:        visited[curr_min_vertex.first] = true;
+        8:  559-block  0
+        -:  560:
+        8:  561:        curr_vertex = vertexes_copy[curr_min_vertex.first];
+        8:  561-block  0
+        8:  562:        curr_min_vertex = std::make_pair('!', INF);
+        8:  562-block  0
+        8:  562-block  1
+    $$$$$:  562-block  2
+    $$$$$:  562-block  3
+        -:  563:    }
+        -:  564:
+        1:  565:    std::cout << "Prim's Minimum Spanning Tree:" << std::endl;
+        1:  565-block  0
+        1:  565-block  1
+        1:  566:    std::cout << "Path" << "      " << "Weight" << std::endl;
+        1:  566-block  0
+        1:  566-block  1
+        1:  566-block  2
+        1:  566-block  3
+        -:  567:
+       10:  568:    for (auto [vertex, distance] : mst)
+        1:  568-block  0
+       10:  568-block  1
+        9:  568-block  2
+        9:  568-block  3
+        -:  569:    {
+        9:  570:        std::cout << parent[vertex] << "-->" << vertex << "      " << distance << std::endl;
+        9:  570-block  0
+        9:  570-block  1
+        9:  570-block  2
+        9:  570-block  3
+        9:  570-block  4
+        9:  570-block  5
+        -:  571:    }
+        -:  572:
+        1:  573:    std::cout << std::endl;
+        1:  573-block  0
+        -:  574:}
+        -:  575:
+        -:  576:#endif //CODE_MY_CLASS_GRAPH_HPP
