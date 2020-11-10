@@ -16,6 +16,8 @@ int main()
 
     mg1.addVertex('f', {{'c', 4}, {'d', 14}, {'e', 10}, {'g', 2}});
 
+    mg1.print_graph();
+
 /// Test 2: Build up graph from adding vertex part 1.
     std::cout << "\n(Test 2): Build up graph from adding vertex part 1." << std::endl;
 
@@ -26,6 +28,8 @@ int main()
     mg2.addVertex('d', {{'a', 6}});
     mg2.addVertex('j', {{'a', 9}});
 
+    mg2.print_graph();
+
 /// Test 3: Build up graph from adding vertex part 2.
     std::cout << "\n(Test 3): Build up graph from adding vertex part 2." << std::endl;
 
@@ -35,6 +39,8 @@ int main()
     mg3.addVertex('d', {{'b', 4}});
     mg3.addVertex('j', {{'d', 5}, {'b', 12}});
     mg3.addVertex('a', {{'b', 3}, {'d', 6}, {'j', 9}});
+
+    mg3.print_graph();
 
 /// Test 4: FAIL -> tried to connect d to j but j was not exist in that time.
     std::cout << "\n(Test 4): FAIL -> tried to connect d to j but j was not exist in that time." << std::endl;
@@ -269,6 +275,63 @@ int main()
 
     mg18.prim('a');
     mg18.dijkstra('a');
+
+/// Test 19: Print Graph part 1
+    std::cout << "\n(Test 19): Print Graph part 1" << std::endl;
+    myGraph mg19("graph_01.txt");
+    mg19.print_graph();
+
+    myGraph mg19_2("graph_02.txt");
+    mg19_2.print_graph();
+
+    myGraph mg19_3("graph_03.txt");
+    mg19_3.print_graph();
+
+/// Test 20: Testing Copy Constructor part 1
+    std::cout << "\n(Test 20): Testing Copy Constructor part 1" << std::endl;
+    myGraph mg20("graph_01.txt");
+
+    myGraph mg20_copy(mg20);
+    mg20_copy.print_graph();
+    mg20_copy.dijkstra('a');
+
+    myGraph mg20_1_copy(mg20_copy);
+    mg20_1_copy.print_graph();
+
+/// Test 21: Testing Copy Constructor part 2
+    std::cout << "\n(Test 21): Testing Copy Constructor part 2" << std::endl;
+    myGraph mg21_empty;
+    myGraph mg21(mg21_empty);
+
+    mg21.print_graph();
+
+/// Test 22: Testing Copy Assignment Operator part 1
+    std::cout << "\n(Test 22): Testing Copy Assignment Operator part 1" << std::endl;
+    myGraph mg22("graph_02.txt");
+
+    myGraph mg22_copy = mg22;
+    mg22_copy.print_graph();
+
+    myGraph mg22_copy2;
+    mg22_copy2.operator=(mg22);
+    mg22_copy2.print_graph();
+
+    myGraph mg22_copy3("graph_03.txt");
+    mg22_copy3.print_graph();
+    mg22_copy3 = mg22_copy2;
+    mg22_copy3.print_graph();
+
+/// Test 23: Testing Copy Assignment Operator part 2
+    std::cout << "\n(Test 23): Testing Copy Assignment Operator part 2" << std::endl;
+    myGraph mg23("graph_03.txt");
+    myGraph mg23_empty;
+
+    mg23 = mg23_empty;
+    mg23.print_graph();
+
+/// Test 24: Invalid Filename part 1
+//    std::cout << "\n(Test 24): Invalid Filename part 1" << std::endl;
+//    myGraph mg24("graph_011.txt");
 
     return 0;
 }

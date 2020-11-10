@@ -46,10 +46,18 @@ class myGraph
         Node() = default;
         explicit Node(char vrtx);
         Node(char vrtx, std::map<char, int> adjacency);
+
+        Node(const Node &n);
+        Node &operator=(const Node &n) = delete;
+        Node(Node &&n) = delete;
+        Node &operator=(Node &&n) = delete;
     };
 
     // A gráf ebben tárolja a csúcsokat.
     std::map<char, Node*> vertexes;
+
+    void erase_graph(std::map<char, Node*>&);
+    void copy_helper(const myGraph&);
 
     bool isEmpty();
     void update_adjacency_after_insert(Node *p);
@@ -72,8 +80,8 @@ public:
     ~myGraph();
     explicit myGraph(const std::string &file_name);
 
-    myGraph(const myGraph &mg) = delete;
-    myGraph &operator=(const myGraph &mg) = delete;
+    myGraph(const myGraph &mg);
+    myGraph &operator=(const myGraph &mg);
     myGraph &operator=(myGraph &&mg) = delete;
     myGraph(myGraph &&mg) = delete;
 
@@ -81,6 +89,8 @@ public:
     void removeVertex(char vrtx);
     void dijkstra(char src);
     void prim(char src);
+
+    void print_graph();
 };
 
 myGraph::Node::Node(char vrtx)
@@ -94,16 +104,32 @@ myGraph::Node::Node(char vrtx, std::map<char, int> adjacency)
     this->adj = std::move(adjacency);
 }
 
-myGraph::~myGraph()
+myGraph::Node::Node(const Node &n)
+{
+    if (n.value)
+    {
+        this->value = n.value;
+        this->adj = n.adj;
+    }
+}
+
+void myGraph::erase_graph(std::map<char, Node*> &d)
 {
     std::map<char, Node*>::iterator it;
     Node *tmp;
 
-    for (it = vertexes.begin(); it != vertexes.end(); it++)
+    for (it = d.begin(); it != d.end(); it++)
     {
         tmp = it->second;
         delete tmp;
     }
+
+    d.clear();
+}
+
+myGraph::~myGraph()
+{
+    erase_graph(vertexes);
 }
 
 // Beolvasom a fájlt és a while ciklus minden iterációjánál 3 sort dolgozok fel (csúcs, szomszédok, súlyok) és
@@ -159,6 +185,35 @@ myGraph::myGraph(const std::string &file_name)
         // Itt tartom számon a gráfnak, hogy milyen node-jai vannak.
         vertexes[p->value] = p;
     }
+}
+
+void myGraph::copy_helper(const myGraph &c)
+{
+    if (!c.vertexes.empty())
+    {
+        for (auto [vertex_value, node] : c.vertexes)
+        {
+            Node *vertex = new Node(node->value, node->adj);
+            this->vertexes.insert(std::make_pair(vertex->value, vertex));
+        }
+    }
+}
+
+myGraph::myGraph(const myGraph &mg)
+{
+    copy_helper(mg);
+}
+
+myGraph &myGraph::operator=(const myGraph &mg)
+{
+    if (this != &mg)
+    {
+        erase_graph(this->vertexes);
+
+        copy_helper(mg);
+    }
+
+    return *this;
 }
 
 // Új node befűzése után, a szomszédjaihoz hozzáadom az új node értékét és a súlyt.
@@ -625,6 +680,54 @@ void myGraph::prim(char src)
     }
 
     std::cout << std::endl;
+}
+
+// Kiíratom a gráfot, úgy ahogy a feladatleírásban a
+// gráfot reprezentáló fájl formátumban megvan adva.
+void myGraph::print_graph()
+{
+    if (!isEmpty())
+    {
+        std::cout << "A Graf a kovetkezokeppen nez ki: " << std::endl;
+
+        for (auto [vertex_value, node] : vertexes)
+        {
+            std::cout << vertex_value << std::endl;
+
+            for (auto adjacent = node->adj.begin(); adjacent != node->adj.end(); adjacent++)
+            {
+                std::cout << adjacent->first;
+
+                // Végén ne legyen vessző
+                if (adjacent != std::prev(node->adj.end()))
+                {
+                    std::cout << ",";
+                }
+            }
+
+            std::cout << std::endl;
+
+            // Végén ne legyen vessző
+            for (auto distance = node->adj.begin(); distance != node->adj.end(); distance++)
+            {
+                std::cout << distance->second;
+
+                // Végén ne legyen vessző
+                if (distance != std::prev(node->adj.end()))
+                {
+                    std::cout << ",";
+                }
+            }
+
+            std::cout << std::endl << std::endl;
+        }
+
+        std::cout << std::endl;
+    }
+    else
+    {
+        std::cout << "A graf ures!" << std::endl << std::endl;
+    }
 }
 
 #endif //CODE_MY_CLASS_GRAPH_HPP
